@@ -30,7 +30,7 @@ def convert_to_token_id(pre_processed):
     return vocab
 
 if __name__ == '__main__':
-    text = read_book('the-verdict.txt')
+    text = read_book('../the-verdict.txt')
     # text = 'Hello world. this, is-- a test?'
     # result = re.split(r'([,.:;?_!"()\']|--|\s)', text)
     # result = [item for item in result if item.strip()]
