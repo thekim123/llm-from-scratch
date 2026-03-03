@@ -19,16 +19,16 @@ class CausalAttention(nn.Module):
         )
 
     def forward(self, x):
-        b, num_tokens, d_in = x.shape
+        b, num_tokens = x.shape
         keys = self.W_key(x)
         values = self.W_value(x)
         queries = self.W_query(x)
 
-        attn_scores = queries @ keys.transpose(1, 2)
-        attn_scores.masked_fill(
+        attention_scores = queries @ keys.transpose(1, 2)
+        attention_scores.masked_fill_(
             self.mask.bool()[:num_tokens, :num_tokens], -torch.inf)
         attn_weights = torch.softmax(
-            attn_scores / keys.shape[-1] ** 0.5, dim=-1
+            attention_scores / keys.shape[-1] ** 0.5, dim=-1
         )
         attn_weights = self.dropout(attn_weights)
 
@@ -65,11 +65,12 @@ class MultiHeadAttention(nn.Module):
         values = values.transpose(1, 2)
         queries = queries.transpose(1, 2)
 
-        attn_scores = queries @ keys.transpose(2, 3)
+        attention_scores = queries @ keys.transpose(2, 3)
         mask_bool = self.mask.bool()[:num_tokens, :num_tokens]
 
-        attn_scores.masked_fill(mask_bool, -torch.inf)
-        attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
+        attention_scores = attention_scores.masked_fill_(mask_bool, -torch.inf)
+        attn_weights = torch.softmax(attention_scores / keys.shape[-1] ** 0.5, dim=-1)
+        attn_weights = self.dropout(attn_weights)
 
         context_vec = (attn_weights @ values).transpose(1, 2)
         context_vec = context_vec.contiguous().view(

@@ -1,7 +1,7 @@
 import torch
 
-from practice.ch04.DummyGptModel import LayerNorm
-from practice.ch04.FeedForward import FeedForward
+from practice.ch04.dummy_gpt_model import LayerNorm
+from practice.ch04.feed_forward import FeedForward
 from self_attention import MultiHeadAttention
 
 

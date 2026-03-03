@@ -29,13 +29,13 @@ query = inputs[1]
 attn_scores_2 = torch.empty(inputs.shape[0])
 for i, x_i in enumerate(inputs):
     attn_scores_2[i] = torch.dot(x_i, query)
-print(attn_scores_2)
+# print(attn_scores_2)
 
 """
 다음 단계에서는 어텐션 점수를 정규화합니다. 
 """
 attn_weight2_tmp = attn_scores_2 / attn_scores_2.sum()
-print("attn_weight: ",attn_weight2_tmp)
+# print("attn_weight: ",attn_weight2_tmp)
 
 """
 소프트맥스 함수를 사용하여 정규화하는 것이 더 일반적이고 권장된다.
@@ -45,46 +45,46 @@ print("attn_weight: ",attn_weight2_tmp)
 """
 # 실전에서는 토치 라이브러리씀
 attn_weights2_naive = softmax_naive(attn_scores_2)
-print("attn_weights2_naive: ",attn_weights2_naive)
-print("sum: ", attn_weights2_naive.sum())
+# print("attn_weights2_naive: ",attn_weights2_naive)
+# print("sum: ", attn_weights2_naive.sum())
 
 attn_weight2 = torch.softmax(attn_scores_2, dim=0)
-print("attn_weight2: ",attn_weight2)
+# print("attn_weight2: ",attn_weight2)
 
 query = inputs[1]
 content_vec_2 = torch.zeros(query.shape)
 for i, x_i in enumerate(inputs):
     content_vec_2 += attn_weight2[i] * x_i
-print('con_vec2: ',content_vec_2)
+# print('con_vec2: ',content_vec_2)
 
 start = time.time()
 attn_scores = torch.empty(6, 6)
 for i, x_i in enumerate(inputs):
     for j, x_j in enumerate(inputs):
         attn_scores[i, j] = torch.dot(x_i, x_j)
-print(attn_scores)
+# print(attn_scores)
 end = time.time()
-print(f"걸린 시간: {end - start:.96f}초")
+# print(f"걸린 시간: {end - start:.96f}초")
 
 start = time.time()
 attn_scores = inputs @ inputs.T
-print(attn_scores)
+# print(attn_scores)
 end = time.time()
-print(f"걸린 시간: {end - start:.96f}초")
+# print(f"걸린 시간: {end - start:.96f}초")
 
 attn_weights = torch.softmax(attn_scores, dim=-1)
-print(attn_weights)
+# print(attn_weights)
 row_2_sum = sum([0.1385, 0.2379, 0.2333, 0.1240, 0.1082, 0.1581])
-print(row_2_sum)
+# print(row_2_sum)
 
 all_context_Vecs = attn_weights @ inputs
-print(all_context_Vecs)
+# print(all_context_Vecs)
 
 x_2 = inputs[1]
 d_in = inputs.shape[1]
 d_out = 2
 
-print('')
+# print('')
 torch.manual_seed(123)
 W_query = torch.nn.Parameter(torch.randn(d_in, d_out), requires_grad=True)
 W_key = torch.nn.Parameter(torch.randn(d_in, d_out), requires_grad=True)
@@ -93,25 +93,25 @@ W_value = torch.nn.Parameter(torch.randn(d_in, d_out), requires_grad=True)
 query2 = x_2 @ W_query
 key2 = x_2 @ W_key
 value2 = x_2 @ W_value
-print(query2)
+# print(query2)
 
 keys = inputs @ W_key
 values = inputs @ W_value
-print(f"keys.shape: ", keys.shape)
-print(f"values.shape: ", values.shape)
+# print(f"keys.shape: ", keys.shape)
+# print(f"values.shape: ", values.shape)
 
 keys_2 = keys[1]
 attn_score_22 = query2.dot(keys_2)
-print(attn_score_22)
+# print(attn_score_22)
 
 attn_scores_2 = query2 @ keys.T
-print(attn_scores_2)
+# print(attn_scores_2)
 
-print()
+# print()
 d_k = keys.shape[-1]
 attn_weights_2 = torch.softmax(attn_scores_2/d_k**0.5, dim=-1)
-print(attn_weights_2)
+# print(attn_weights_2)
 
-print()
+# print()
 content_vec_22 = attn_weights_2 @ values
-print(content_vec_22)
+# print(content_vec_22)

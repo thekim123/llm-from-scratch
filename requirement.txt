@@ -3,3 +3,5 @@ tiktoken
 torch
 torchvision
 torchaudio
+tensorflow>=2.15.0
+tqdm>=4.66
