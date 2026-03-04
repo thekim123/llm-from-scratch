@@ -73,7 +73,7 @@ if __name__ == '__main__':
     model.to(device)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.0004, weight_decay=0.1)
-    num_epochs = 10
+    num_epochs = 20
     tokenizer = get_tokenizer()
 
     train_data, test_data = get_dummy_train_data()
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         train_data,
         batch_size=2,
         max_length=GPT_CONFIG_124M["context_length"],
-        stride=GPT_CONFIG_124M["context_length"],
+        stride=64,
         drop_last=True,
         shuffle=True,
         num_workers=0,
@@ -90,14 +90,16 @@ if __name__ == '__main__':
         test_data,
         batch_size=2,
         max_length=GPT_CONFIG_124M["context_length"],
-        stride=GPT_CONFIG_124M["context_length"],
+        stride=64,
         drop_last=False,
         shuffle=False,
         num_workers=0,
     )
+
+    prompt = 'if she had not dragged him down,'
     train_losses, val_losses, token_seen = train_model_simple(
         model, train_loader, val_loader, optimizer, device, num_epochs=num_epochs, eval_freq=5, eval_iter=5,
-        start_context='if she had not dragged him down,', tokenizer=tokenizer
+        start_context=prompt, tokenizer=tokenizer
     )
 
     epochs_tensor = torch.linspace(0, num_epochs, len(train_losses))
@@ -108,11 +110,11 @@ if __name__ == '__main__':
     tokenizer = get_tokenizer()
     token_ids = generate(
         input_model=model,
-        idx=text_to_token_ids("if she had not dragged him down,", tokenizer),
+        idx=text_to_token_ids(prompt, tokenizer),
         max_new_tokens=25,
         context_size=GPT_CONFIG_124M["context_length"],
-        top_k=25,
-        temperature=1.4
+        top_k=None,
+        temperature=0.0
     )
     print("output text: \n", token_ids_to_text(token_ids, tokenizer))
 

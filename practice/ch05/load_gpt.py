@@ -16,6 +16,7 @@ def assign(left, right):
         raise ValueError("Shape mismatch: {} vs {}".format(left.shape, right.shape))
     return torch.nn.Parameter(torch.tensor(right))
 
+
 def load_weights_into_gpt(gpt, params):
     gpt.pos_emb.weight = assign(gpt.pos_emb.weight, params['wpe'])
     gpt.tok_emb.weight = assign(gpt.tok_emb.weight, params['wte'])
@@ -79,19 +80,24 @@ def load_weights_into_gpt(gpt, params):
         gpt.out_head.weight = assign(gpt.out_head.weight, params["wte"])
 
 
-if __name__ == '__main__':
-    model_name = 'gpt2-small (124M)'
-    NEW_CONFIG = GPT_CONFIG_124M.copy()
-    NEW_CONFIG.update(model_configs[model_name])
-    NEW_CONFIG.update({"context_length": 1024})
-    NEW_CONFIG.update({'qkv_bias': True})
-    gpt_model = GPTModel(NEW_CONFIG)
+def load_pretrained_gpt(config):
+    gpt_model = GPTModel(config)
     gpt_model.eval()
 
     settings, params = load_gpt2(MODEL_PATH)
     load_weights_into_gpt(gpt_model, params)
 
     gpt_model.to(DEVICE)
+    return gpt_model
+
+
+if __name__ == '__main__':
+    model_name = 'gpt2-small (124M)'
+    NEW_CONFIG = GPT_CONFIG_124M.copy()
+    NEW_CONFIG.update(model_configs[model_name])
+    NEW_CONFIG.update({"context_length": 1024})
+    NEW_CONFIG.update({'qkv_bias': True})
+    gpt_model = load_pretrained_gpt(NEW_CONFIG)
 
     torch.manual_seed(123)
     token_ids = generate(
