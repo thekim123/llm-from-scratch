@@ -1,7 +1,12 @@
- ### 1. 의존성 설치
+### 1. venv 시작
+
 ```bash
-pip install -r .\requirement.txt
+python -m venv venv
+venv\Scripts\activate   # Windows
+pip install -r requirements.txt
+deactivate
 ```
+
 
 ```bash
 # cuda version 확인
